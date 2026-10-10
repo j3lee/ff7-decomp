@@ -4805,7 +4805,46 @@ void WmDrawGroundQuad(s16 halfX, s16 halfZ, s16 y, s16 angle, POLY_FT4* prim, s3
     }
 }
 
-INCLUDE_ASM("asm/us/world/nonmatchings/world", func_800B5C7C);
+void func_800B5C7C(WorldActor* arg0) {
+    s16 halfX;
+    POLY_FT4* prim;
+    s32 shade;
+    s32 halfZ;
+    u8 color;
+
+    shade = 0x20 - ((s32)(arg0->pos.vy - arg0->unk48) >> 8);
+    if (shade < 0) {
+        shade = 0;
+    }
+    prim = &arg0->prims[WmGetCurrRenderBufferId()];
+    color = shade;
+    prim->b0 = color;
+    prim->g0 = color;
+    prim->r0 = color;
+    halfZ = 0x64 - ((s32)(arg0->pos.vy - arg0->unk48) >> 6);
+    switch (arg0->actorType) {
+    case 4:
+    case 19:
+    case 41:
+    case 42:
+        halfZ = ((u32)(halfZ * 2 + halfZ)) >> 1;
+        halfX = halfZ;
+        break;
+    case 3:
+        halfX = halfZ * 2;
+        halfZ = (halfZ * 3) * 2;
+        break;
+    case 11:
+        halfX = (halfZ * 2 + halfZ) * 2;
+        halfZ = (halfZ * 2 + halfZ) * 4;
+        break;
+    default:
+        halfX = halfZ;
+        break;
+    }
+    WmDrawGroundQuad(
+        halfX, halfZ, arg0->unk48, (s16)((u16)arg0->unk3C + (arg0->unk3E + 0x800) + (func_800A1DC0() * 4)), prim, 0);
+}
 
 void WmSetCalculateAllPartsLighting(FieldModelEntry* model) {
     u8* part;
