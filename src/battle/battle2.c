@@ -1179,7 +1179,18 @@ static s16 BattleUnitAnimScriptReadU16(s16 arg0, u8* arg1) {
     return (arg1[g_BattleModels[arg0].scriptPc++] << 8) + val;
 }
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800CD5E4);
+void func_800CD5E4(s32 arg0, s32 arg1, s16 arg2, s16 arg3) {
+    *(s32*)0x1F800000 = 0x800 - g_BattleModels[arg1 & 0xFF].defaultRotX;
+    *(s32*)0x1F800004 = ((arg2 * g_BattleModels[arg0 & 0xFF].scale) >> 12) +
+                        ((g_BattleModels[arg1 & 0xFF].collisionRadius * g_BattleModels[arg1 & 0xFF].scale) >> 12);
+
+    g_BattleModels[arg0 & 0xFF].rootTrans.vx =
+        g_BattleModels[arg1 & 0xFF].rootTrans.vx - ((rsin(*(s32*)0x1F800000) * *(s32*)0x1F800004) >> 12);
+    g_BattleModels[arg0 & 0xFF].rootTrans.vz =
+        g_BattleModels[arg1 & 0xFF].rootTrans.vz + ((rcos(*(s32*)0x1F800000) * *(s32*)0x1F800004) >> 12);
+    g_BattleModels[arg0 & 0xFF].rootTrans.vy = arg3;
+    g_BattleModels[arg0 & 0xFF].rootRot.vy = *(s32*)0x1F800000;
+}
 
 static void BattleModelRestoreVelocity(u8 arg0) {
     g_BattleModels[arg0].rootTrans.vx = D_80163C80[arg0].vx;
